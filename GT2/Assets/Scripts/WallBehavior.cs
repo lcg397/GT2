@@ -2,34 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
-
 public class WallBehavior : MonoBehaviour {
     [SerializeField] float RayDis;
     [SerializeField] float DistToNext;
     [SerializeField] float Gap, MagMax;
     [SerializeField] GameObject Rubble;
     public float TimeRubHit, TimeRubRB;
-    public bool IsRB, IsHitBull;
+    public bool IsRB, IsHitBull, IsMoving;
     LayerMask Dest_mask = -8;
     Rigidbody RB;
-    public UnityEvent RubbleExplosion;
-    ParticleSystem Rubb;
     public Collider[] cols;
+    Collider MCOL;
     public List<Vector3> locs;
     public Vector3 StartPos;
-
-
+    ParticleSystem Rubb;
+    Mesh RubbRend;
+    MeshRenderer Self;
+    public int partNum;
     private void Start()
     {
+        MCOL = this.gameObject.GetComponent<MeshCollider>();
+        Self = this.gameObject.GetComponent<MeshRenderer>();
+        Rubble = this.gameObject.transform.GetChild(0).gameObject;
+        Rubb = Rubble.GetComponent<ParticleSystem>();
+        RubbRend = this.gameObject.GetComponent<Mesh>();
         MagMax = 5f;
         RayDis = 10f;
         Gap = 1.2f;
         RB = this.gameObject.GetComponent<Rigidbody>();
-        StartPos = this.gameObject.transform.position;
-        //Rubb = this.gameObject.GetComponentInChildren<ParticleSystem>();
-        //Rubb.shape.mesh.Equals(this.gameObject.GetComponents<MeshFilter>());
-       
+        StartPos = this.gameObject.transform.position;   
     }
     private void Update()
     {
@@ -42,27 +43,20 @@ public class WallBehavior : MonoBehaviour {
         {
             CheckBelowMe();
         }
-       if (RB.velocity.magnitude >= MagMax)
-        {
-
-            //Debug.Log("Boom");
-            //Instantiate(Rubble, this.gameObject.transform.localPosition, this.gameObject.transform.localRotation);
-            //Destroy(this.gameObject);
-            Debug.Log("FallApart");
-          
-
+        if(IsHitBull == true)
+        {   
+            StartCoroutine("WaitForRubble", 2f);
         }
-     
-       
-
-
+        if (RB.velocity.magnitude >= 5f)
+        {
+            IsMoving = true;
+        }
     }
     void CheckBelowMe()
     {
         RaycastHit HitInfo;
         if (Physics.Raycast(this.gameObject.transform.localPosition, -Vector3.up, out HitInfo, RayDis, Dest_mask.value))
-        {
-          
+        {     
                 DistToNext = this.gameObject.transform.localPosition.magnitude - HitInfo.transform.gameObject.transform.localPosition.magnitude;
                 if (DistToNext >= Gap)
                 {
@@ -70,36 +64,45 @@ public class WallBehavior : MonoBehaviour {
                     this.gameObject.tag = "Chunk";
                     IsRB = true;
                 }
-                if (DistToNext <= Gap)
-                {
-                 Debug.Log("NotFar");
-                }
             }
-            else
-            {
-
-                Debug.Log("Already nonK");
-
-            }
-        }    
+        }
     private IEnumerator WaitForRubble(float DTime)
-    { while(true)
+    {
+        while (true)
         {
             yield return new WaitForSeconds(DTime);
-            Debug.Log("DoneCO");
-            //Instantiate(Rubble, this.gameObject.transform.localPosition, this.gameObject.transform.localRotation);
+            Self.enabled = false;
+            MCOL.enabled = false;
+            Rubb.Emit(partNum);
+            StartCoroutine("WaitForDestroy", 12f);
+        }
+    }
+    private IEnumerator WaitForDestroy(float DTime)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(DTime);
             Destroy(this.gameObject);
         }
     }
-
-
-    void ParticleExplosion()
+    private IEnumerator WaitForDestroyFall(float DTime)
     {
-
-        RubbleExplosion.Invoke();
-
-
-
+        while (true)
+        {
+            yield return new WaitForSeconds(DTime);            
+            Destroy(this.gameObject);
+        }
     }
-
+    private void OnCollisionEnter(Collision col)
+    {if(col.transform.gameObject.tag == "Floor")
+        {
+            if (IsMoving == true)
+            {
+                Self.enabled = false;
+                MCOL.enabled = false;
+                Rubb.Emit(partNum);
+                StartCoroutine("WaitForDestroyFall", 2f);
+            }
+        }
+    }
 }

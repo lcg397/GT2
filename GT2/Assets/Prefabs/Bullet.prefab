@@ -112,10 +112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60d95126236ac3b4eac262328e003dbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BulletForce: 1000
+  BulletForce: 2000
   BulletHealth: 3
-  rb: {fileID: 0}
-  ColRB: {fileID: 0}
 --- !u!135 &135656053852043702
 SphereCollider:
   m_ObjectHideFlags: 1
