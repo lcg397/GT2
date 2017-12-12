@@ -19,18 +19,7 @@ public class RubbleBehavior : MonoBehaviour {
         sh.shapeType = ParticleSystemShapeType.Mesh;
         sh.mesh = PartMesh;
         TimeD = 2f;
-        //StartCoroutine(WaitForRubble(TimeD));
     }
-    private IEnumerator WaitForRubble(float DTime)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(DTime);
-            
-            Destroy(this.gameObject);
-        }
-    }
-
   
 
 

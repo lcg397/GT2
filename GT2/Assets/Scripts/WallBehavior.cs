@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 public class WallBehavior : MonoBehaviour {
-    [SerializeField] float RayDis;
-    [SerializeField] float DistToNext;
-    [SerializeField] float Gap, MagMax;
-    [SerializeField] GameObject Rubble;
+    float RayDis;
+    float DistToNext;
+    float Gap, MagMax;
+    GameObject Rubble;
     public float TimeRubHit, TimeRubRB;
     public bool IsRB, IsHitBull, IsMoving;
     LayerMask Dest_mask = -8;
