@@ -1,0 +1,4 @@
+- setup mesh rubble particle system
+- setup idividual force thresholds
+- Create an efficient way to handle chunk behavior
+	- Add Rigidbodies and WallBehavior Scripts
